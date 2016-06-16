@@ -1,0 +1,70 @@
+---
+title: "Analyzing/Matching GDP data with OECD status for selected countries"
+author: "Vishal Ahir"
+date: "June 12, 2016"
+output: 
+  html_document:
+    keep_md: true
+---
+
+### Purpose
+The purpose of this analysis is to analyze GDP rankings data set of ~190 countries for year 2012, merge it with a separate data set that contains details about OECD status of countries from 1st data set and provide answers related to OECD and non-OECD country groups GDP rankings.  
+
+OECD - The Organization for Economic Co-operation and Development  
+The mission of the Organisation for Economic Co-operation and Development (OECD) is to promote policies that will improve the economic and social well-being of people around the world. - (**www.oecd.org**)
+
+Following are the URLs of 2 data sets that will be utilized for this analysis:  
+1)  GDP Data : https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FGDP.csv  
+2)  Edu Data : https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FEDSTATS_Country.csv  
+
+### Dowloading 2 data sets
+  
+```{r}
+# As a first step, we will store URL for GDP data in a R variable called URL1
+URL1 <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FGDP.csv"
+
+#Since URL points to a CSV file that has variables separated by comma, we will try and read this data
+# into a R data frame using read.csv command
+
+GDPData <- read.csv(URL1, header = FALSE, sep = ",", quote = "\"", fill=TRUE, stringsAsFactors = FALSE)
+
+#As you can see, we are storing the data from dowloaded CSV file into GDPData data frame.
+#The header = False argument to this function indicates header from CSV file will not be used.
+# The header from input file was skipped as there was no meaningful data present.
+
+# Below we are using str() function to check out observations/variables for the downloaded dataset.
+str(GDPData)
+
+# 2nd data set, loaded using same command as first one.
+# In this case, header argument is kept true as the file contains meaningful variable header names.
+
+URL2 <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FEDSTATS_Country.csv" 
+edu_df <- read.csv(URL2, header=TRUE, sep = ",", quote="\"", fill=TRUE, stringsAsFactors = FALSE)
+
+# Below we are using str() function to check out observations/variables for the downloaded dataset.
+str(edu_df)
+
+```
+
+### Prepping data for analysis  
+In this block we will prep the data - remove records with missing values, converting data types, sorting, etc.
+
+
+```{r}
+# 
+library(plyr)
+
+GDPData$V2 <- as.integer(GDPData$V2)
+
+GDPData2 <- subset(x = GDPData, !is.na(GDPData$V2))
+
+GDPData2 <- arrange(GDPData2, desc(V2))
+
+
+```
+
+### Merging 2 data sets
+
+
+
+### Conclusion
