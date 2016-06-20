@@ -280,14 +280,19 @@ avg_rank_non_oecd <- mean(subset(gdp_edu_no_na$Rank, gdp_edu_no_na$Income.Group 
 library(ggplot2)
 
 # Plotting chart with raw USDollars(GDP) values.
-qplot (CountryCode, USDollars, data = gdp_edu_no_na, color=Income.Group, xlab="Country", ylab = "GDP")
+#qplot (CountryCode, USDollars, data = gdp_edu_no_na, color=Income.Group, xlab="Country", ylab = "GDP")
+ggplot(gdp_edu_no_na, aes(CountryCode, USDollars, color = Income.Group)) + geom_point() +
+  ggtitle("GDP Plot using 2012 data") + labs(x="Country", y="GDP - 2012 Data")
 ```
 
 ![](RubricCaseStudy_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
 
 ```r
 #Plotting same chart using log of USDollars.
-qplot (CountryCode, log(USDollars), data = gdp_edu_no_na, color=Income.Group, xlab="Country", ylab = "log(GDP)")
+#qplot (CountryCode, log(USDollars), data = gdp_edu_no_na, color=Income.Group, xlab="Country", ylab = "log(GDP)")
+
+ggplot(gdp_edu_no_na, aes(CountryCode, log(USDollars), color = Income.Group)) + geom_point() +
+  ggtitle("GDP Plotted using log(GDP) - 2012 data") + labs(x="Country", y="log(GDP) - 2012 Data")
 ```
 
 ![](RubricCaseStudy_files/figure-html/unnamed-chunk-9-2.png)<!-- -->
