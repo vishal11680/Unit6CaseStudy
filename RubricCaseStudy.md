@@ -123,6 +123,7 @@ GDPData2 <- GDPData[,1:5]
 names(GDPData2) <- c("CountryCode", "Rank", "Blank", "Economy", "USDollars")
 
 #Below we are removing rows that are missing Rank values for any countries.
+NAcount <- sum(is.na(GDPData2$Rank))
 GDPData2 <- subset(x = GDPData2, !is.na(GDPData2$Rank))
 
 # The fifth column of GDP data set contains actual GDP in terms of millions of dollars for respective country.
@@ -157,6 +158,9 @@ summary(GDPData2$USDollars)
 ##       40     7005    27640   377700   205300 16240000
 ```
 
+*Out of 331 observations in GDP Dataset, 5 rows from header were removed as they were invalid and from remaining 326 observatiaons, count of observations missing GDP rank is : 136*
+
+
 ### Prepping EDU data set for analysis  
 In this block we will prep the EDU data - remove records with missing values, converting data types, sorting, etc.
 
@@ -177,7 +181,12 @@ table(edu_df_5$Income.Group)
 ##                   40                   56                   47
 ```
 
-*Outcome of the table function call states we have 24 blanks or missing values from the EDU data set.*  
+```r
+blank_ig <- subset(edu_df_5, Income.Group == "")
+blank_ig_cnt <- nrow(blank_ig)
+```
+
+*We have 24 missing values for Income Group variable in the EDU dataset.*  
 
 
 ### Merging 2 data sets
@@ -208,11 +217,16 @@ summary(join_gdp_edu$USDollars)
 
 ```r
 # Removing records with missing values.
+na_rank <- sum(is.na(join_gdp_edu$Rank))
+na_inc_grp <- sum(is.na(join_gdp_edu$Income.Group))
 gdp_edu_no_na <- subset(join_gdp_edu, !is.na(Rank) & !is.na(Income.Group))
 
 # Sorting combined data set on USDollars (GDP) ascending.
 gdp_edu_no_na <- arrange(gdp_edu_no_na, USDollars)
 ```
+
+*In the merged data frame we see Rank variable has 45 missing values and "Income Group" has 1 missing values.*
+
 
 ### Questions related to analysis
 
@@ -255,8 +269,8 @@ avg_rank_oecd <- mean(subset(gdp_edu_no_na$Rank, gdp_edu_no_na$Income.Group == "
 avg_rank_non_oecd <- mean(subset(gdp_edu_no_na$Rank, gdp_edu_no_na$Income.Group == "High income: nonOECD" ))
 ```
 
-***Answer*** Average GDP Ranking for High Income OECD is : 32.9666667
-             Average GDP Ranking for High Income nonOECD is : 91.9130435
+***Answer*** Average GDP Ranking for High Income OECD is : 32.9666667  
+             Average GDP Ranking for High Income nonOECD is : 91.9130435  
 
 * Question 4 : Plot the GDP for all of the countries. Use ggplot2 to color your plot by Income Group.  
 
@@ -273,10 +287,16 @@ qplot (CountryCode, USDollars, data = gdp_edu_no_na, color=Income.Group, xlab="C
 
 ```r
 #Plotting same chart using log of USDollars.
-qplot (CountryCode, log(USDollars), data = gdp_edu_no_na, color=Income.Group, xlab="Country", ylab = "GDP")
+qplot (CountryCode, log(USDollars), data = gdp_edu_no_na, color=Income.Group, xlab="Country", ylab = "log(GDP)")
 ```
 
 ![](RubricCaseStudy_files/figure-html/unnamed-chunk-9-2.png)<!-- -->
+
+Few points on plot for GDP of all countries  
+    * Without log of GDP, the plot shows 2 outliers from High Income OECD group and 1 outlier from Lower Middle Income group.  
+    * Without log of GDP, the distribution appears a little right skewed when we exclude outliers.  
+    * With the log of GDP, the plot shows 1 outlier from High Income OECD group and 1 from Lower Middle Income group.  
+    * With the the distribution appears equal.  
 
 * Question 5 : Cut the GDP ranking into 5 separate quantile groups. Make a table versus Income.Group. How many countries are Lower middle income but among the 38 nations with highest GDP?  
 
@@ -312,9 +332,9 @@ table(gdp_edu_no_na$rank_groups, gdp_edu_no_na$Income.Group)
 ##   4                   8
 ##   5                   9
 ```
-**Answer** After looking at table function call above, we can there are 5 countries that are part of 38 countries with highest GDP and are also part of Lower Middle Income group.  
+**Answer** After looking at table function call above, we can there are *5 countries* that are part of 38 countries with highest GDP and are also part of Lower Middle Income group.  
 
-### Conclusion
+### Conclusion  
 
 * Analysis of GDP and EDU datasets gave below insights
   * GDP Dataset
@@ -323,5 +343,10 @@ table(gdp_edu_no_na$rank_groups, gdp_edu_no_na$Income.Group)
     * 3)  USA is the ranked as country with highest GDP among all 190 countries.
   * EDU Dataset
     * 1)  EDU dataset had a total  of 234 observations of 31 variables.
-    * 2)  When we matched EDU dataset with GDP dataset, we found 189 matches. So there was no match for 45 countries in EDU dataset.
+    * 2)  When we matched EDU dataset with GDP dataset, we found 189 matches and 45 non-matches in total.
     * 3)  Plot on GDP with log shows equal distribution.
+  * NA Counts in both datasets
+    * In GDP Dataset, count of missing values for Rank variable : 136
+    * In EDU dataset, count of missing values for Income Group variable is : 24
+    * In merged dataset, count of missing values for Rank variable is : 45
+    * In merged dataset, count of missing values for Income Group variable is : 1
